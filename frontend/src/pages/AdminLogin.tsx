@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { adminLogin } from '../api';
+import PageTransition from '../components/PageTransition';
 import './AdminLogin.css';
 
 export default function AdminLogin() {
@@ -25,24 +26,26 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="login-page">
-      <form className="login-card" onSubmit={handleSubmit}>
-        <h1 className="login-title">后台管理登录</h1>
-        <p className="login-sub">请输入管理员密码</p>
-        <input
-          type="password"
-          className="login-input"
-          placeholder="管理员密码"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          autoFocus
-        />
-        {error && <p className="login-error">{error}</p>}
-        <button type="submit" className="login-btn" disabled={loading}>
-          {loading ? '登录中...' : '登 录'}
-        </button>
-      </form>
-    </div>
+    <PageTransition>
+      <div className="login-page">
+        <form className="login-card" onSubmit={handleSubmit}>
+          <h1 className="login-title">后台管理</h1>
+          <p className="login-sub">请输入管理员密码</p>
+          <input
+            type="password"
+            className="login-input"
+            placeholder="管理员密码"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            autoFocus
+          />
+          {error && <p className="login-error">{error}</p>}
+          <button type="submit" className="login-btn" disabled={loading}>
+            {loading ? '登录中...' : '登 录'}
+          </button>
+        </form>
+      </div>
+    </PageTransition>
   );
 }

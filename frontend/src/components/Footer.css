@@ -1,0 +1,40 @@
+.footer {
+  border-top: 1px solid var(--border);
+  background: var(--card-color);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 20px 28px;
+  margin-top: 40px;
+}
+
+.footer__inner {
+  max-width: calc(var(--max-width) + 280px);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.footer__copy {
+  font-size: 0.83rem;
+  color: var(--color3);
+}
+
+.footer__links {
+  display: flex;
+  gap: 16px;
+}
+
+.footer__link {
+  font-size: 0.83rem;
+  color: var(--color2);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer__link:hover { color: var(--theme-color); }
+
+@media (max-width: 480px) {
+  .footer__inner { justify-content: center; text-align: center; }
+}

@@ -415,13 +415,13 @@ blog-frontend    running         0.0.0.0:80->80/tcp
 **验证服务是否正常**：
 
 ```bash
-# 测试后端健康检测接口（通过内网）
-curl http://localhost:3000/api/health
-# 应返回：{"status":"ok"}
-
-# 测试通过 Nginx 访问（模拟外网请求）
+# ✅ 正确：通过 Nginx (80 端口) 访问，验证前端代理 + 后端均正常
 curl http://localhost/api/health
 # 应返回：{"status":"ok"}
+
+# ❌ 错误示例（不要用这个）：
+# curl http://localhost:3000/api/health
+# 3000 端口仅在 Docker 内网开放，宿主机无法直接访问（这是安全设计）
 ```
 
 ---

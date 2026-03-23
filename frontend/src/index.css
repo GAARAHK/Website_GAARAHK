@@ -1,10 +1,139 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+:root {
+  /* ─ zyyo.net 风格色系 ────────────────────────── */
+  --theme-color:    #2867f0;
+  --theme-color-50: rgba(40, 103, 240, 0.45);
+  --theme-color-10: rgba(40, 103, 240, 0.08);
+  --back-color:     linear-gradient(180deg, #f9fbff, #f2f6ff);
+  --card-color:     rgba(255, 255, 255, 0.85);
+  --color0:         #fff;
+  --color1:         #262626;
+  --color2:         #606060;
+  --color3:         #a0a8b8;
+  --card-border:    #fff;
+  --border:         rgba(227, 232, 247, 0.87);
+  --border1:        #b4b8ca;
+  --shadow:         0px 10px 24px 0 rgba(111, 162, 226, 0.08);
+  --radius:         19px;
+  --max-width:      1000px;
+  --transition:     cubic-bezier(0.25, 0.1, 0.25, 1);
+
+  /* ─ 兼容旧组件的别名 ─────────────────────────── */
+  --accent-primary:   #2867f0;
+  --accent-secondary: #5893f0;
+  --accent-grad:      linear-gradient(135deg, #2867f0, #5893f0);
+  --bg-base:          #f9fbff;
+  --bg-surface:       rgba(255, 255, 255, 0.85);
+  --bg-elevated:      #fff;
+  --bg-glass:         rgba(255, 255, 255, 0.8);
+  --text-primary:     #262626;
+  --text-secondary:   #606060;
+  --text-muted:       #a0a8b8;
+  --border-subtle:    rgba(227, 232, 247, 0.87);
+  --border-accent:    rgba(40, 103, 240, 0.35);
+  --shadow-card:      0px 10px 24px 0 rgba(111, 162, 226, 0.08);
+  --shadow-glow:      0px 12px 32px rgba(40, 103, 240, 0.15);
+  --radius-sm:        6px;
+  --radius-md:        12px;
+  --radius-lg:        19px;
+  --radius-xl:        28px;
+  --dur-fast:         0.15s;
+  --dur-base:         0.3s;
+  --dur-slow:         0.6s;
+  --ease-spring:      cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ─ 深色模式（通过 html.dark 切换）─────────────── */
+html.dark {
+  --back-color:     rgb(11, 15, 17);
+  --card-color:     rgba(15, 18, 23, 0.78);
+  --color0:         rgb(15, 18, 23);
+  --color1:         #ffffff;
+  --color2:         #d1d1d1;
+  --color3:         #888;
+  --card-border:    rgba(43, 44, 45, 0.65);
+  --border:         rgba(43, 44, 45, 0.65);
+  --shadow:         0px 10px 24px 0 rgba(0, 0, 0, 0.15);
+  --bg-base:        rgb(11, 15, 17);
+  --bg-surface:     rgba(15, 18, 23, 0.8);
+  --bg-elevated:    rgb(20, 24, 30);
+  --bg-glass:       rgba(255, 255, 255, 0.04);
+  --text-primary:   #ffffff;
+  --text-secondary: #d1d1d1;
+  --text-muted:     #888;
+  --border-subtle:  rgba(43, 44, 45, 0.65);
+}
+
+html { scroll-behavior: smooth; font-size: 16px; }
+
 body {
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  background: #f4f6fb;
-  color: #333;
+  font-family: 'Satoshi Variable', 'Inter', -apple-system, BlinkMacSystemFont,
+    'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  background: var(--back-color);
+  color: var(--color1);
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
 }
 
 #root { min-height: 100vh; }
+
+/* ─ 滚动条 ───────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--theme-color); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent-secondary); }
+
+/* ─ 选中文字 ─────────────────────────────────── */
+::selection { background: var(--theme-color); color: #fff; }
+
+/* ─ 滚动入场动画（全局可用）─────────────────────  */
+.fade-in {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: transform 0.8s var(--transition), opacity 0.6s var(--transition);
+}
+.fade-in.visible {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* ─ 通用按钮 ─────────────────────────────────── */
+.btn {
+  padding: 8px 20px;
+  border-radius: var(--radius-md);
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: opacity var(--dur-fast), background var(--dur-base), transform var(--dur-fast);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: inherit;
+}
+.btn:active { transform: scale(0.97); }
+
+.btn--primary {
+  background: var(--theme-color);
+  color: #fff;
+  box-shadow: 0 4px 16px var(--theme-color-50);
+}
+.btn--primary:hover:not(:disabled) { opacity: 0.88; }
+.btn--primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn--ghost {
+  background: transparent;
+  color: var(--color2);
+  border: 1.5px solid var(--border);
+}
+.btn--ghost:hover { border-color: var(--theme-color); color: var(--theme-color); }
+
+.btn--sm { padding: 5px 12px; font-size: 0.82rem; }
+
+.btn--danger {
+  background: rgba(239, 68, 68, 0.08);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+.btn--danger:hover { background: rgba(239, 68, 68, 0.15); }

@@ -13,9 +13,11 @@ services:
       # ⚠️ 生产环境务必修改为随机长字符串，不要用默认值！
       JWT_SECRET: ${JWT_SECRET:-change_this_in_production}
       DB_PATH: /app/data/data.sqlite
+      UPLOAD_DIR: /app/uploads
     volumes:
-      # 将宿主机 ./data 目录挂载，保证 SQLite 数据持久化
+      # 将宿主机目录挂载，保证持久化
       - ./data:/app/data
+      - ./uploads:/app/uploads
     # 不对外暴露端口，只允许 frontend 容器内部访问
     expose:
       - "3000"

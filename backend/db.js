@@ -2,19 +2,12 @@ const Database = require('better-sqlite3');
 const path = require('path');
 const fs = require('fs');
 
-// 支持通过 DB_PATH 环境变量指定数据库路径（Docker 挂载持久化卷时使用）
 const dbPath = process.env.DB_PATH || path.join(__dirname, 'data.sqlite');
-
-// 确保目录存在（容器首次启动时 /app/data 可能为空）
 const dbDir = path.dirname(dbPath);
 if (!fs.existsSync(dbDir)) fs.mkdirSync(dbDir, { recursive: true });
 
 const db = new Database(dbPath);
-
-// 开启 WAL 模式，提升并发读写性能
 db.pragma('journal_mode = WAL');
-
-// ─── 建表 ─────────────────────────────────────────────────────────────
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS articles (
@@ -32,5 +25,14 @@ db.exec(`
     password_hash TEXT    NOT NULL
   );
 `);
+
+// 数据库迁移：为已有数据库添加新字段（字段已存在时会报错，用 try/catch 忽略）
+const migrations = [
+  "ALTER TABLE articles ADD COLUMN category TEXT DEFAULT ''",
+  "ALTER TABLE articles ADD COLUMN tags TEXT DEFAULT '[]'",
+];
+for (const sql of migrations) {
+  try { db.exec(sql); } catch { /* 字段已存在，跳过 */ }
+}
 
 module.exports = db;
