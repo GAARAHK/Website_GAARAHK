@@ -3,8 +3,10 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm ci
+# 只复制 package.json，让容器内 npm install 自动解析正确平台的原生绑定
+# （不复制 lock 文件，避免 Windows 生成的 lock 缺少 linux-musl 原生模块）
+COPY package.json ./
+RUN npm install
 
 COPY . .
 RUN npm run build
