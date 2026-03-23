@@ -19,7 +19,22 @@ echo ""
 # ── 1. 拉取最新代码 ──────────────────────────────────────────────────
 echo "📥 [1/4] 拉取最新代码..."
 cd "$REPO_DIR"
+
+# 若有本地修改（如 .env），先 stash 暂存，拉取后恢复
+STASH_OUTPUT=$(git stash 2>&1)
+if echo "$STASH_OUTPUT" | grep -q "Saved"; then
+  echo "   ℹ️  本地修改已暂存（stash）"
+  STASHED=1
+else
+  STASHED=0
+fi
+
 git pull --rebase
+
+if [ "$STASHED" -eq 1 ]; then
+  git stash pop && echo "   ℹ️  本地修改已恢复（stash pop）"
+fi
+
 echo "✅ 代码已更新"
 echo ""
 
