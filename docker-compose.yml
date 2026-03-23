@@ -1,0 +1,50 @@
+services:
+
+  # ─── 后端：Node.js + Express + SQLite ──────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: blog-backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      # ⚠️ 生产环境务必修改为随机长字符串，不要用默认值！
+      JWT_SECRET: ${JWT_SECRET:-change_this_in_production}
+      DB_PATH: /app/data/data.sqlite
+    volumes:
+      # 将宿主机 ./data 目录挂载，保证 SQLite 数据持久化
+      - ./data:/app/data
+    # 不对外暴露端口，只允许 frontend 容器内部访问
+    expose:
+      - "3000"
+    networks:
+      - blog-net
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  # ─── 前端：React(Vite 构建) + Nginx 静态托管 + 反代 /api ──────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: blog-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"       # 对外开放 HTTP 80 端口
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - blog-net
+
+networks:
+  blog-net:
+    driver: bridge
+
+# 提示：首次启动后执行以下命令初始化管理员密码：
+# docker exec -it blog-backend node seed.js <你的密码>

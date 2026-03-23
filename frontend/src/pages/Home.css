@@ -1,0 +1,41 @@
+.home__hero {
+  text-align: center;
+  padding: 80px 20px 50px;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  color: #fff;
+}
+
+.home__hero h1 {
+  font-size: 2.8rem;
+  margin: 0 0 12px;
+  color: #e94560;
+}
+
+.home__hero p {
+  font-size: 1.1rem;
+  color: #aaa;
+  margin: 0;
+}
+
+.home__posts {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 48px 24px;
+}
+
+.home__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 28px;
+}
+
+.status-text {
+  text-align: center;
+  color: #888;
+  font-size: 1rem;
+  padding: 40px 0;
+}
+
+.status-text.error {
+  color: #e94560;
+}

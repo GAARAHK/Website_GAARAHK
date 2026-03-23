@@ -1,0 +1,179 @@
+.dashboard {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 24px;
+}
+
+.dashboard__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.dashboard__header h1 {
+  font-size: 1.8rem;
+  color: #1a1a2e;
+  margin: 0;
+}
+
+.dashboard__header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.dashboard__msg {
+  text-align: center;
+  color: #888;
+  padding: 20px 0;
+}
+
+/* ── 文章列表 ─────────────────── */
+.dashboard__list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dashboard__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  border-radius: 10px;
+  padding: 16px 20px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.07);
+}
+
+.dashboard__item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dashboard__item-title {
+  font-weight: 600;
+  color: #1a1a2e;
+  font-size: 1rem;
+}
+
+.dashboard__item-date {
+  font-size: 0.8rem;
+  color: #aaa;
+}
+
+.dashboard__item-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* ── 编辑器遮罩 ───────────────── */
+.editor-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 20px;
+}
+
+.editor-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 36px;
+  width: 100%;
+  max-width: 700px;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.2);
+}
+
+.editor-card h2 {
+  margin: 0;
+  color: #1a1a2e;
+}
+
+.editor-input,
+.editor-textarea {
+  padding: 10px 14px;
+  border: 1.5px solid #ddd;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.2s;
+  resize: vertical;
+}
+
+.editor-input:focus,
+.editor-textarea:focus {
+  border-color: #e94560;
+}
+
+.editor-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+/* ── 通用按钮 ─────────────────── */
+.btn {
+  padding: 8px 18px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: opacity 0.2s, background 0.2s;
+}
+
+.btn--primary {
+  background: #e94560;
+  color: #fff;
+}
+
+.btn--primary:hover:not(:disabled) {
+  background: #c73652;
+}
+
+.btn--primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn--ghost {
+  background: transparent;
+  color: #666;
+  border: 1.5px solid #ddd;
+}
+
+.btn--ghost:hover {
+  border-color: #aaa;
+  color: #333;
+}
+
+.btn--sm {
+  padding: 6px 14px;
+  font-size: 0.82rem;
+  background: #f0f0f5;
+  color: #333;
+}
+
+.btn--sm:hover {
+  background: #e0e0ec;
+}
+
+.btn--danger {
+  background: #fde8e8;
+  color: #e94560;
+}
+
+.btn--danger:hover {
+  background: #fbd3d3;
+}
