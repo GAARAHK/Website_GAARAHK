@@ -20,19 +20,25 @@ echo ""
 echo "📥 [1/4] 拉取最新代码..."
 cd "$REPO_DIR"
 
-# 若有本地修改（如 .env），先 stash 暂存，拉取后恢复
-STASH_OUTPUT=$(git stash 2>&1)
-if echo "$STASH_OUTPUT" | grep -q "Saved"; then
-  echo "   ℹ️  本地修改已暂存（stash）"
-  STASHED=1
-else
-  STASHED=0
+# 策略：只保护 .env，其余本地改动全部丢弃，避免 Dockerfile/dist 等文件产生冲突
+# 备份 .env（如果存在且被 git 追踪）
+ENV_BACKUP=""
+if [ -f "$REPO_DIR/.env" ]; then
+  ENV_BACKUP=$(cat "$REPO_DIR/.env")
+  echo "   ℹ️  已备份 .env"
 fi
 
-git pull --rebase
+# 丢弃所有本地修改（含 Dockerfile、dist 等），确保 pull 无冲突
+git checkout -- .
+git clean -fd --exclude='.env' --exclude='*.sqlite' --exclude='data/'
+echo "   ℹ️  本地修改已丢弃（.env 与数据库文件保留）"
 
-if [ "$STASHED" -eq 1 ]; then
-  git stash pop && echo "   ℹ️  本地修改已恢复（stash pop）"
+git pull --ff-only
+
+# 还原 .env（如果之前被 pull 覆盖了）
+if [ -n "$ENV_BACKUP" ] && [ ! -f "$REPO_DIR/.env" ]; then
+  echo "$ENV_BACKUP" > "$REPO_DIR/.env"
+  echo "   ℹ️  .env 已还原"
 fi
 
 echo "✅ 代码已更新"
