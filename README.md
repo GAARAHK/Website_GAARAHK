@@ -565,6 +565,27 @@ bash update.sh
 
 `update.sh` 会自动完成：丢弃服务器本地修改 → `git fetch` + `reset --hard` → 重新构建镜像 → 重启容器 → 清理旧镜像。
 
+#### 手动更新（update.sh 失败时的备用流程）
+
+当 `update.sh` 因冲突或异常中断，需要手动操作：
+
+```bash
+# 1. 强制与远程完全同步（解决任何本地冲突）
+cd /opt/blog
+git fetch origin
+git reset --hard origin/main
+
+# 2. 验证关键文件正确（Dockerfile 第一行应为 FROM nginx，而不是 <<<<<<< 冲突标记）
+head -3 frontend/Dockerfile
+
+# 3. 重新构建并重启
+docker compose build --no-cache
+docker compose up -d --remove-orphans
+
+# 4. 清理旧镜像
+docker image prune -f
+```
+
 ### 停止/重启服务
 
 ```bash
