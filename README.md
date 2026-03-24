@@ -530,15 +530,40 @@ docker compose logs -f
 
 ### 更新代码后重新部署
 
-```bash
-cd /opt/blog
+> 本项目前端在**本地 Windows** 预构建，`dist/` 通过 git 提交到仓库，服务器只做镜像打包和容器重启，**不在服务器执行 npm/vite**。
 
-# 如果使用 Git 管理，先拉取最新代码
-git pull
+#### 修改了前端代码
 
-# 重新构建并重启（不影响数据库中的数据）
-docker compose up -d --build
+```powershell
+# 本地 Windows 执行
+cd D:\Flutter_Study\Website_GAARAHK\frontend
+npm run build                    # 重新生成 dist/
+
+cd D:\Flutter_Study\Website_GAARAHK
+git add frontend/dist
+git commit -m "build: update dist"
+git push
 ```
+
+#### 修改了后端代码
+
+```powershell
+# 本地 Windows 执行（无需重新 build，直接 commit push）
+cd D:\Flutter_Study\Website_GAARAHK
+git add -A
+git commit -m "fix/feat: 描述改动"
+git push
+```
+
+#### 服务器一键更新（前后端通用）
+
+```bash
+# SSH 登录服务器后执行
+cd /opt/blog
+bash update.sh
+```
+
+`update.sh` 会自动完成：丢弃服务器本地修改 → `git fetch` + `reset --hard` → 重新构建镜像 → 重启容器 → 清理旧镜像。
 
 ### 停止/重启服务
 
@@ -624,6 +649,41 @@ docker exec -it blog-backend node seed.js 新密码
 浏览器缓存了静态资源，强制刷新即可：
 - Windows/Linux：`Ctrl + Shift + R`
 - macOS：`Cmd + Shift + R`
+
+### 问题 6：`docker compose build` 报错 `unknown instruction: <<<<<<<`
+
+```
+现象：Dockerfile 第 1 行出现 <<<<<<< Updated upstream
+原因：git stash pop 时 Dockerfile 与远程版本发生合并冲突，留下了 Git 冲突标记
+```
+
+解决（在服务器执行）：
+
+```bash
+cd /opt/blog
+git fetch origin
+git reset --hard origin/main   # 强制对齐远程，丢弃所有本地修改
+docker compose build --no-cache && docker compose up -d
+```
+
+> 使用最新的 `update.sh` 后，此问题不会再出现（脚本已改为 `reset --hard` 模式）。
+
+### 问题 7：构建前端镜像时报 `"/dist": not found`（构建上下文只有 32B）
+
+```
+现象：build 日志显示 transferring context: 32B，随后报 failed to compute cache key: "/dist": not found
+原因：frontend/.dockerignore 中有 dist/ 一行，把预构建产物排除在 Docker 构建上下文之外
+```
+
+解决：从 `frontend/.dockerignore` 中删除 `dist/` 这一行：
+
+```bash
+# 本地执行
+# 编辑 frontend/.dockerignore，确保文件内容只有：
+# node_modules/
+```
+
+然后重新 commit push，服务器执行 `bash update.sh`。
 
 ---
 
