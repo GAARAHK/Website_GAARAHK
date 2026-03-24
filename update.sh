@@ -33,7 +33,8 @@ git checkout -- .
 git clean -fd --exclude='.env' --exclude='*.sqlite' --exclude='data/'
 echo "   ℹ️  本地修改已丢弃（.env 与数据库文件保留）"
 
-git pull --ff-only
+git fetch origin
+git reset --hard origin/main
 
 # 还原 .env（如果之前被 pull 覆盖了）
 if [ -n "$ENV_BACKUP" ] && [ ! -f "$REPO_DIR/.env" ]; then
