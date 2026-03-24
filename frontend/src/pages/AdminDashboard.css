@@ -208,3 +208,42 @@
   justify-content: flex-end;
   margin-top: 4px;
 }
+
+/* ── 个人信息弹窗专属 ────────────────── */
+.editor-card--narrow { max-width: 480px; }
+
+.editor-avatar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+}
+.editor-avatar__img {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 2px solid var(--border-subtle);
+}
+.editor-avatar__placeholder {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--bg-surface);
+  border: 2px dashed var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+.editor-avatar__actions { display: flex; flex-direction: column; gap: 8px; }
+
+.editor-input--textarea {
+  resize: vertical;
+  min-height: 88px;
+}

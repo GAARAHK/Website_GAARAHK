@@ -27,6 +27,7 @@
 Website_GAARAHK/
 ├── docker-compose.yml        ← Docker 编排文件（一键启动所有服务）
 ├── .env.example              ← 环境变量模板（需复制为 .env 修改）
+├── update.sh                 ← 服务器一键更新脚本
 ├── .gitignore
 ├── README.md
 │
@@ -35,22 +36,26 @@ Website_GAARAHK/
 │   ├── .dockerignore
 │   ├── .env.example
 │   ├── server.js             ← 入口文件
-│   ├── db.js                 ← SQLite 数据库初始化
+│   ├── db.js                 ← SQLite 数据库初始化 + 字段迁移
 │   ├── seed.js               ← 初始化管理员密码脚本
 │   ├── routes/
-│   │   ├── articles.js       ← 文章 CRUD API
-│   │   └── auth.js           ← 管理员登录 API
+│   │   ├── articles.js       ← 文章 CRUD / 分类 / 标签 / 搜索 API
+│   │   ├── auth.js           ← 管理员登录 API
+│   │   ├── upload.js         ← 图片/视频上传 API（最大 100MB）
+│   │   └── profile.js        ← 博主个人信息 API（是否膴/头像/简介）
+│   ├── uploads/              ← 上传文件存储目录（挂载到宿主机）
 │   └── package.json
 │
 └── frontend/                 ← React + Vite + TypeScript 前端
-    ├── Dockerfile            ← 多阶段构建：Vite 打包 → Nginx 托管
+    ├── Dockerfile            ← 直接 COPY 预构建的 dist/，服务器无需编译
     ├── .dockerignore
-    ├── nginx.conf            ← Nginx 配置（静态托管 + /api 反代）
+    ├── nginx.conf            ← Nginx 配置（静态托管 + /api 反代 + 上传限制 110MB）
     ├── vite.config.ts        ← 开发环境代理配置
+    ├── dist/                 ← 预构建产物（提交到 git，服务器直接使用）
     ├── src/
     │   ├── api/index.ts      ← 所有 API 请求封装
-    │   ├── components/       ← 通用组件（Navbar、PostCard）
-    │   └── pages/            ← 页面组件
+    │   ├── components/       ← 通用组件（Navbar、PostCard、RichEditor、ImageUploader 等）
+    │   └── pages/            ← 页面组件（Home、Article、AdminLogin、AdminDashboard 等）
     └── package.json
 ```
 
@@ -716,4 +721,9 @@ docker compose build --no-cache && docker compose up -d
    - 点击 **+ 新建文章** 发布新文章
    - 点击 **编辑** 修改已有文章
    - 点击 **删除** 删除文章
-4. 文章内容支持 HTML 格式（后续可集成 Markdown 编辑器）
+4. 封面图支持**本地上传**：在编辑器内点击「上传封面」选择本地图片，也可手动填入外部图片 URL
+5. 文章内容支持富文本编辑（加粗/斜体/标题/列表/代码块/引用），以及内嵌图片和视频
+6. 点击顶部 **个人信息** 按鈕可修改博主展示信息：
+   - **头像**：点击「上传头像」选择本地图片
+   - **昵称**：展示在博客页面的名字
+   - **个人简介**：属于你的个人介绍文字

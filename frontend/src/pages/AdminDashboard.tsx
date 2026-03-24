@@ -1,13 +1,16 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { IconPlus, IconEdit, IconTrash, IconLogout, IconX } from '@tabler/icons-react';
+import { IconPlus, IconEdit, IconTrash, IconLogout, IconX, IconUser } from '@tabler/icons-react';
 import {
   getAllArticles,
   createArticle,
   updateArticle,
   deleteArticle,
   uploadFile,
+  getProfile,
+  updateProfile,
   type Article,
+  type Profile,
 } from '../api';
 import RichEditor from '../components/RichEditor';
 import PageTransition from '../components/PageTransition';
@@ -21,6 +24,10 @@ export default function AdminDashboard() {
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState('');
   const [coverUploading, setCoverUploading] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
+  const [profile, setProfile] = useState<Profile>({ nickname: '', bio: '', avatar: '' });
+  const [profileSaving, setProfileSaving] = useState(false);
+  const [avatarUploading, setAvatarUploading] = useState(false);
 
   const logout = () => {
     localStorage.removeItem('admin_token');
@@ -35,10 +42,14 @@ export default function AdminDashboard() {
       .finally(() => setLoading(false));
   };
 
+  const loadProfile = () => {
+    getProfile().then((r) => setProfile(r.data)).catch(() => {});
+  };
+
   useEffect(() => {
     const token = localStorage.getItem('admin_token');
     if (!token) navigate('/admin');
-    else load();
+    else { load(); loadProfile(); }
   }, []);
 
   const handleSave = async (e: React.FormEvent) => {
@@ -83,6 +94,34 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setAvatarUploading(true);
+    try {
+      const res = await uploadFile(file);
+      setProfile((p) => ({ ...p, avatar: res.data.url }));
+    } catch {
+      setMsg('✗ 头像上传失败');
+    } finally {
+      setAvatarUploading(false);
+    }
+  };
+
+  const handleProfileSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setProfileSaving(true);
+    try {
+      await updateProfile(profile);
+      setMsg('✓ 个人信息已保存');
+      setShowProfile(false);
+    } catch {
+      setMsg('✗ 保存失败');
+    } finally {
+      setProfileSaving(false);
+    }
+  };
+
   return (
     <PageTransition>
       <div className="dashboard">
@@ -96,6 +135,10 @@ export default function AdminDashboard() {
               <IconPlus size={16} stroke={2.5} />
               新建文章
             </button>
+            <button className="btn btn--ghost" onClick={() => setShowProfile(true)}>
+              <IconUser size={16} stroke={1.8} />
+              个人信息
+            </button>
             <button className="btn btn--ghost" onClick={logout}>
               <IconLogout size={16} stroke={1.8} />
               退出
@@ -107,6 +150,75 @@ export default function AdminDashboard() {
           <p className={`dashboard__msg ${msg.startsWith('✗') ? 'dashboard__msg--error' : 'dashboard__msg--success'}`}>
             {msg}
           </p>
+        )}
+
+        {/* 个人信息弹窗 */}
+        {showProfile && (
+          <div className="editor-backdrop" onClick={() => setShowProfile(false)}>
+            <form
+              className="editor-card editor-card--narrow"
+              onSubmit={handleProfileSave}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="editor-card__header">
+                <h2>个人信息</h2>
+                <button type="button" className="editor-card__close" onClick={() => setShowProfile(false)}>
+                  <IconX size={20} />
+                </button>
+              </div>
+
+              <div className="editor-avatar">
+                {profile.avatar
+                  ? <img className="editor-avatar__img" src={profile.avatar} alt="头像" />
+                  : <div className="editor-avatar__placeholder"><IconUser size={40} stroke={1} /></div>
+                }
+                <div className="editor-avatar__actions">
+                  <label className="btn btn--ghost btn--sm">
+                    {avatarUploading ? '上传中...' : '上传头像'}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      hidden
+                      onChange={handleAvatarUpload}
+                      disabled={avatarUploading}
+                    />
+                  </label>
+                  {profile.avatar && (
+                    <button
+                      type="button"
+                      className="btn btn--ghost btn--sm"
+                      onClick={() => setProfile((p) => ({ ...p, avatar: '' }))}
+                    >
+                      移除头像
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              <input
+                className="editor-input"
+                placeholder="昵称（展示在博客页面）"
+                value={profile.nickname}
+                onChange={(e) => setProfile((p) => ({ ...p, nickname: e.target.value }))}
+              />
+              <textarea
+                className="editor-input editor-input--textarea"
+                placeholder="个人简介（展示在博客页面）"
+                rows={4}
+                value={profile.bio}
+                onChange={(e) => setProfile((p) => ({ ...p, bio: e.target.value }))}
+              />
+
+              <div className="editor-actions">
+                <button type="submit" className="btn btn--primary" disabled={profileSaving}>
+                  {profileSaving ? '保存中...' : '保存'}
+                </button>
+                <button type="button" className="btn btn--ghost" onClick={() => setShowProfile(false)}>
+                  取消
+                </button>
+              </div>
+            </form>
+          </div>
         )}
 
         {/* 编辑器弹窗 */}

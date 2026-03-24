@@ -30,6 +30,9 @@ db.exec(`
 const migrations = [
   "ALTER TABLE articles ADD COLUMN category TEXT DEFAULT ''",
   "ALTER TABLE articles ADD COLUMN tags TEXT DEFAULT '[]'",
+  "ALTER TABLE admin ADD COLUMN nickname TEXT DEFAULT ''",
+  "ALTER TABLE admin ADD COLUMN bio TEXT DEFAULT ''",
+  "ALTER TABLE admin ADD COLUMN avatar TEXT DEFAULT ''",
 ];
 for (const sql of migrations) {
   try { db.exec(sql); } catch { /* 字段已存在，跳过 */ }

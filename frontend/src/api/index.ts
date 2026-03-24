@@ -59,6 +59,17 @@ export const updateArticle = (id: number, data: Partial<Article>) =>
 
 export const deleteArticle = (id: number) => api.delete(`/articles/${id}`);
 
+// ─── 个人信息接口 ─────────────────────────────────────────
+export interface Profile {
+  nickname: string;
+  bio: string;
+  avatar: string;
+}
+
+export const getProfile = () => api.get<Profile>('/profile');
+
+export const updateProfile = (data: Profile) => api.put<Profile>('/profile', data);
+
 // ─── 文件上传接口 ─────────────────────────────────────────
 export const uploadFile = (file: File) => {
   const formData = new FormData();
