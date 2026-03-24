@@ -8,7 +8,7 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
-dist
+# dist  # 预编译产物需要提交，服务器直接部署，无需在服务器构建
 dist-ssr
 *.local
 
